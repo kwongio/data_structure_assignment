@@ -1,10 +1,11 @@
-#include <ostream>
+#include <iostream>
+
 using namespace std;
 
 class node {
 public:
     double coefficients = 0.0;
-    unsigned exponents = 0 ;
+    unsigned exponents = 0;
     node *next = nullptr;
 
     node() {
@@ -16,16 +17,12 @@ public:
     node(double coefficients, int exponents) : coefficients(coefficients), exponents(exponents), next(nullptr) {
     }
 
-     ~node() {
+    ~node() {
         cout << "node" << endl;
-         delete next;
+        if (next != nullptr) {
 
-    }
-
-
-    void print() {
-        cout << "coefficients" << coefficients << endl;
-        cout << "exponents" << exponents << endl;
+            delete next;
+        }
     }
 
 

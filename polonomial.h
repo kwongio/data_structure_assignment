@@ -1,4 +1,5 @@
 #include <iostream>
+#include "node.h"
 
 using namespace std;
 
@@ -25,103 +26,38 @@ public:
     };
 
     ~polynomial() {
-        cout << "poly" << endl;
+        cout << "poloy deconstructr" << endl;
         size = 0;
-        delete head;
+        if (head != nullptr) {
 
-    }
-
-    polynomial &operator+(polynomial &p1) {
-
-    }
-
-    polynomial operator-(polynomial p) {
-
-    }
-
-    polynomial operator*(polynomial p) {
-
-    }
-
-    void operator=(polynomial &p) {
-        list_clear();
-        node *temp = p.head;
-        list_head_insert(new node(p.head->coefficients, p.head->exponents));
-        temp = temp->next;
-
-        while (temp != nullptr) {
-            list_insert(new node(temp->coefficients, temp->exponents), size);
-            temp = temp->next;
-        }
-    }
-
-    int getMaxExponent(node *p1, node *p2){
-        return max(p1->exponents, p2->exponents);
-    }
-
-    double * ploySort(node *p1, node *p2 , char sign){
-        int maxExponent =getMaxExponent(p1, p2);
-        cout << "max:" << maxExponent << endl;
-
-        double *arr = new double[maxExponent + 1]();
-
-        node *first = p1;
-        node *second = p2;
-        if(sign == '+') {
-            while (first != nullptr) {
-                arr[first->exponents] += first->coefficients;
-                first = first->next;
-            }
-
-            while (second != nullptr) {
-                arr[second->exponents] += second->coefficients;
-                second = second->next;
-            }
-
-        }else if(sign == '-'){
-            while (first != nullptr) {
-                arr[first->exponents] += first->coefficients;
-                first = first->next;
-            }
-
-            while (second != nullptr) {
-                arr[second->exponents] -= second->coefficients;
-                second = second->next;
-            }
-        }
-
-        return arr;
-    }
-
-//계수정렬로 계산하기
-    void operator+=(polynomial p) {
-        double *sortArray = ploySort(head, p.head, '+');
-        for (int i = 0; i <= getMaxExponent(p.head,head); ++i) {
-            cout << i << ": " << sortArray[i]  << endl;
-        }
-    }
-
-    polynomial operator-=(polynomial p) {
-        double *sortArray = ploySort(head, p.head, '-');
-        for (int i = 0; i <= getMaxExponent(p.head,head); ++i) {
-            cout << i << ": " << sortArray[i]  << endl;
+            delete head;
         }
 
     }
 
-    polynomial operator*=(polynomial p) {
+    polynomial operator+(polynomial &p);
 
-    }
+    polynomial operator-(polynomial &p);
 
-    int list_length() const;
+    polynomial operator*(polynomial &p);
+
+    polynomial operator*=(polynomial &p);
+
+    void operator-=(polynomial &p);
+
+    void operator+=(polynomial &p);
+
+    void operator=(polynomial &p);
+
+    void list_head_insert(node *newItem);
 
     node *list_search(node *item);
+
+    int list_length() const;
 
     node *list_locate(int index);
 
     void list_insert(node *newItem, int index);
-
-    void list_head_insert(node *newItem);
 
     void list_head_remove();
 
@@ -133,49 +69,154 @@ public:
 
     bool isEmpty();
 
+    void show_content(node *&head);
 
-    void show_content(node *&head) {
-        node *curr = head;
-        for (int i = 0; i < list_length(); ++i) {
-            cout << curr->coefficients << "x^" << curr->exponents;
-            if (curr->next != nullptr) {
-                if (curr->next->coefficients >= 0) {
-                    cout << "+";
-                }
-            }
-            curr = curr->next;
-        }
-        cout << "" << endl;
-    }
+    double eval(int x);
 
-    double eval(int x) {
-        node *curr = head;
-        double sum = 0;
-        while (curr != nullptr) {
-            if (curr->coefficients == 0) {
-                sum += 1;
-            } else {
-                double result = 1.0;
-                for (int i = 0; i < curr->exponents; ++i) {
-                    result *= curr->coefficients * x;
-                }
-                sum += result;
-                curr = curr->next;
-            }
+    int getMaxExponent(node *p1, node *p2);
 
+    double *ploySort(node *p1, node *p2, char sign);
 
-        }
-        return sum;
-    }
+    void getSortedPoly(double *pDouble, int exponent);
 };
 
-int polynomial::list_length() const {
-    return size;
+
+double *polynomial::ploySort(node *p1, node *p2, char sign) {
+    int maxExponent = getMaxExponent(p1, p2);
+    cout << "max:" << maxExponent << endl;
+
+    double *arr = new double[maxExponent + 1]();
+
+    node *first = p1;
+    node *second = p2;
+    if (sign == '+') {
+        while (first != nullptr) {
+            arr[first->exponents] += first->coefficients;
+            first = first->next;
+        }
+
+        while (second != nullptr) {
+            arr[second->exponents] += second->coefficients;
+            second = second->next;
+        }
+
+    } else if (sign == '-') {
+        while (first != nullptr) {
+            arr[first->exponents] += first->coefficients;
+            first = first->next;
+        }
+
+        while (second != nullptr) {
+            arr[second->exponents] -= second->coefficients;
+            second = second->next;
+        }
+    }
+
+    return arr;
 }
+
+
+double polynomial::eval(int x) {
+    node *curr = head;
+    double sum = 0;
+    while (curr != nullptr) {
+        if (curr->coefficients == 0) {
+            sum += 1;
+        } else {
+            double result = 1.0;
+            for (int i = 0; i < curr->exponents; ++i) {
+                result *= curr->coefficients * x;
+            }
+            sum += result;
+            curr = curr->next;
+        }
+
+
+    }
+    return sum;
+}
+
+void polynomial::show_content(node *&head) {
+    node *curr = head;
+    for (int i = 0; i < list_length(); ++i) {
+        cout << curr->coefficients << "x^" << curr->exponents;
+        if (curr->next != nullptr) {
+            if (curr->next->coefficients >= 0) {
+                cout << "+";
+            }
+        }
+        curr = curr->next;
+    }
+    cout << "" << endl;
+}
+
+
+int polynomial::getMaxExponent(node *p1, node *p2) {
+    return max(p1->exponents, p2->exponents);
+}
+
+//TODO 에러 발생 맥에서
+void polynomial::operator-=(polynomial &p) {
+    double *sortArray = ploySort(head, p.head, '-');
+    int maxExponent = getMaxExponent(p.head, head);
+    getSortedPoly(sortArray, maxExponent);
+}
+
+
+void polynomial::operator+=(polynomial &p) {
+    double *sortArray = ploySort(head, p.head, '+');
+
+    int maxExponent = getMaxExponent(p.head, head);
+    getSortedPoly(sortArray, maxExponent);
+    delete[] sortArray;
+}
+
+
+void polynomial::operator=(polynomial &p) {
+    list_clear();
+    node *temp = p.head;
+    list_head_insert(new node(p.head->coefficients, p.head->exponents));
+    temp = temp->next;
+
+    while (temp != nullptr) {
+        list_insert(new node(temp->coefficients, temp->exponents), size);
+        temp = temp->next;
+    }
+}
+
+
+polynomial polynomial::operator*=(polynomial &p) {
+    return polynomial();
+}
+
+polynomial polynomial::operator+(polynomial &p) {
+    double *sortArray = ploySort(head, p.head, '+');
+    int maxExponent = getMaxExponent(p.head, head);
+    getSortedPoly(sortArray, maxExponent);
+
+
+    return *this;
+}
+
+polynomial polynomial::operator-(polynomial &p) {
+    double *sortArray = ploySort(head, p.head, '-');
+    int maxExponent = getMaxExponent(p.head, head);
+    getSortedPoly(sortArray, maxExponent);
+    return *this;
+}
+
+polynomial polynomial::operator*(polynomial &p) {
+    return polynomial();
+}
+
 
 void polynomial::list_head_insert(node *newItem) {
     head = newItem;
     size++;
+}
+
+int polynomial::list_length() const {
+    return size;
 }
 
 
@@ -185,7 +226,8 @@ bool polynomial::isEmpty() {
 
 void polynomial::list_clear() {
     size = 0;
-    delete head;
+    head = nullptr;
+
 }
 
 void polynomial::list_head_remove() {
@@ -255,8 +297,21 @@ node *polynomial::list_search(node *item) {
     return nullptr;
 }
 
+void polynomial::getSortedPoly(double *sortArray, int maxExponent) {
+    list_clear();
+    for (int i = maxExponent; i >= 0; --i) {
+        if (sortArray[i] != 0) {
+            if (head == nullptr) {
+                list_head_insert(new node(sortArray[i], i));
+            } else {
 
+                list_insert(new node(sortArray[i], i), size);
+            }
+            cout << i << ": " << sortArray[i] << endl;
 
+        }
+    }
+    show_content(head);
 
-
+}
 
