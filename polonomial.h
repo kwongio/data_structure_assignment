@@ -35,13 +35,13 @@ public:
 
     }
 
-    polynomial operator+(polynomial &p);
+    polynomial &operator+(polynomial &p);
 
-    polynomial operator-(polynomial &p);
+    polynomial &operator-(polynomial &p);
 
-    polynomial operator*(polynomial &p);
+    polynomial &operator*(polynomial &p);
 
-    polynomial operator*=(polynomial &p);
+    polynomial &operator*=(polynomial &p);
 
     void operator-=(polynomial &p);
 
@@ -81,80 +81,6 @@ public:
 };
 
 
-double *polynomial::ploySort(node *p1, node *p2, char sign) {
-    int maxExponent = getMaxExponent(p1, p2);
-    cout << "max:" << maxExponent << endl;
-
-    double *arr = new double[maxExponent + 1]();
-
-    node *first = p1;
-    node *second = p2;
-    if (sign == '+') {
-        while (first != nullptr) {
-            arr[first->exponents] += first->coefficients;
-            first = first->next;
-        }
-
-        while (second != nullptr) {
-            arr[second->exponents] += second->coefficients;
-            second = second->next;
-        }
-
-    } else if (sign == '-') {
-        while (first != nullptr) {
-            arr[first->exponents] += first->coefficients;
-            first = first->next;
-        }
-
-        while (second != nullptr) {
-            arr[second->exponents] -= second->coefficients;
-            second = second->next;
-        }
-    }
-
-    return arr;
-}
-
-
-double polynomial::eval(int x) {
-    node *curr = head;
-    double sum = 0;
-    while (curr != nullptr) {
-        if (curr->coefficients == 0) {
-            sum += 1;
-        } else {
-            double result = 1.0;
-            for (int i = 0; i < curr->exponents; ++i) {
-                result *= curr->coefficients * x;
-            }
-            sum += result;
-            curr = curr->next;
-        }
-
-
-    }
-    return sum;
-}
-
-void polynomial::show_content(node *&head) {
-    node *curr = head;
-    for (int i = 0; i < list_length(); ++i) {
-        cout << curr->coefficients << "x^" << curr->exponents;
-        if (curr->next != nullptr) {
-            if (curr->next->coefficients >= 0) {
-                cout << "+";
-            }
-        }
-        curr = curr->next;
-    }
-    cout << "" << endl;
-}
-
-
-int polynomial::getMaxExponent(node *p1, node *p2) {
-    return max(p1->exponents, p2->exponents);
-}
-
 //TODO 에러 발생 맥에서
 void polynomial::operator-=(polynomial &p) {
     double *sortArray = ploySort(head, p.head, '-');
@@ -185,29 +111,45 @@ void polynomial::operator=(polynomial &p) {
 }
 
 
-polynomial polynomial::operator*=(polynomial &p) {
-    return polynomial();
-}
-
-polynomial polynomial::operator+(polynomial &p) {
+polynomial &polynomial::operator+(polynomial &p) {
     double *sortArray = ploySort(head, p.head, '+');
     int maxExponent = getMaxExponent(p.head, head);
     getSortedPoly(sortArray, maxExponent);
-
-
     return *this;
 }
 
-polynomial polynomial::operator-(polynomial &p) {
+polynomial &polynomial::operator-(polynomial &p) {
     double *sortArray = ploySort(head, p.head, '-');
     int maxExponent = getMaxExponent(p.head, head);
     getSortedPoly(sortArray, maxExponent);
     return *this;
 }
 
-polynomial polynomial::operator*(polynomial &p) {
-    return polynomial();
+polynomial &polynomial::operator*(polynomial &p) {
+    return *this;
 }
+
+
+polynomial &polynomial::operator*=(polynomial &p) {
+    return *this;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void polynomial::list_head_insert(node *newItem) {
@@ -227,6 +169,7 @@ bool polynomial::isEmpty() {
 void polynomial::list_clear() {
     size = 0;
     head = nullptr;
+
 
 }
 
@@ -263,8 +206,6 @@ void polynomial::list_copy(polynomial copy) {
     }
     list_clear();
     node *temp = copy.head;
-
-
     list_head_insert(new node(copy.head->coefficients, copy.head->exponents));
     temp = temp->next;
 
@@ -312,6 +253,76 @@ void polynomial::getSortedPoly(double *sortArray, int maxExponent) {
         }
     }
     show_content(head);
-
 }
 
+
+double *polynomial::ploySort(node *p1, node *p2, char sign) {
+    int maxExponent = getMaxExponent(p1, p2);
+    cout << "max:" << maxExponent << endl;
+
+    double *arr = new double[maxExponent + 1]();
+
+    node *first = p1;
+    node *second = p2;
+    if (sign == '+') {
+        while (first != nullptr) {
+            arr[first->exponents] += first->coefficients;
+            first = first->next;
+        }
+
+        while (second != nullptr) {
+            arr[second->exponents] += second->coefficients;
+            second = second->next;
+        }
+
+    } else if (sign == '-') {
+        while (first != nullptr) {
+            arr[first->exponents] += first->coefficients;
+            first = first->next;
+        }
+
+        while (second != nullptr) {
+            arr[second->exponents] -= second->coefficients;
+            second = second->next;
+        }
+    }
+    return arr;
+}
+
+
+double polynomial::eval(int x) {
+    node *curr = head;
+    double sum = 0;
+    while (curr != nullptr) {
+        if (curr->coefficients == 0) {
+            sum += 1;
+        } else {
+            double result = 1.0;
+            for (int i = 0; i < curr->exponents; ++i) {
+                result *= curr->coefficients * x;
+            }
+            sum += result;
+            curr = curr->next;
+        }
+    }
+    return sum;
+}
+
+void polynomial::show_content(node *&head) {
+    node *curr = head;
+    for (int i = 0; i < list_length(); ++i) {
+        cout << curr->coefficients << "x^" << curr->exponents;
+        if (curr->next != nullptr) {
+            if (curr->next->coefficients >= 0) {
+                cout << "+";
+            }
+        }
+        curr = curr->next;
+    }
+    cout << "" << endl;
+}
+
+
+int polynomial::getMaxExponent(node *p1, node *p2) {
+    return max(p1->exponents, p2->exponents);
+}

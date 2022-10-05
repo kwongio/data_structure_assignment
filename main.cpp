@@ -27,8 +27,19 @@ int main() {
     p2.list_insert(third3, 1);
     p2.list_insert(second2, 2);
     p2.list_insert(first1, 3);
-    p1-=p2;
-    p1-=p2;
+
+    polynomial p3;
+
+    p3 = (p2 - p1);
+    p3 = (p2 - p1);
+    p3 = (p2 - p1);
+
+
+    cout << "====================" << endl;
+    p1.show_content(p1.head);
+    p2.show_content(p2.head);
+    p3.show_content(p3.head);
+
     return 0;
 
 }
