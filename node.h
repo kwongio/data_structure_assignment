@@ -18,11 +18,8 @@ public:
     }
 
     ~node() {
-        cout << "node" << endl;
-        if (next != nullptr) {
-
-            delete next;
-        }
+        cout << "node  deconstructor " << endl;
+        delete next;
     }
 
 

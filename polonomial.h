@@ -1,6 +1,5 @@
 #include <iostream>
 #include "node.h"
-
 using namespace std;
 
 class polynomial {
@@ -20,13 +19,12 @@ public:
 
     };
 
-    polynomial(const polynomial &source) {
-        head = source.head;
-        size = source.size;
+    polynomial(polynomial &source) {
+        list_copy(source);
     };
 
     ~polynomial() {
-        cout << "poloy deconstructr" << endl;
+        cout << "poly deconstructr" << endl;
         size = 0;
         if (head != nullptr) {
 
@@ -35,19 +33,6 @@ public:
 
     }
 
-    polynomial &operator+(polynomial &p);
-
-    polynomial &operator-(polynomial &p);
-
-    polynomial &operator*(polynomial &p);
-
-    polynomial &operator*=(polynomial &p);
-
-    void operator-=(polynomial &p);
-
-    void operator+=(polynomial &p);
-
-    void operator=(polynomial &p);
 
     void list_head_insert(node *newItem);
 
@@ -65,11 +50,11 @@ public:
 
     void list_clear();
 
-    void list_copy(polynomial copy);
+    void list_copy(polynomial &copy);
 
     bool isEmpty();
 
-    void show_content(node *&head);
+    void show_content();
 
     double eval(int x);
 
@@ -77,7 +62,24 @@ public:
 
     double *ploySort(node *p1, node *p2, char sign);
 
-    void getSortedPoly(double *pDouble, int exponent);
+    void getSortedPoly(double *sortArray, int exponent);
+
+    void polynomial::getPoly(double *sortArray, int maxExponent, polynomial &p);
+
+
+    polynomial &operator+(polynomial &p);
+
+    polynomial &operator-(polynomial &p);
+
+    polynomial &operator*(polynomial &p);
+
+    polynomial &operator*=(polynomial &p);
+
+    void operator-=(polynomial &p);
+
+    void operator+=(polynomial &p);
+
+    void operator=(polynomial &p);
 };
 
 
@@ -99,6 +101,9 @@ void polynomial::operator+=(polynomial &p) {
 
 
 void polynomial::operator=(polynomial &p) {
+    if(this == &p){
+        return;
+    }
     list_clear();
     node *temp = p.head;
     list_head_insert(new node(p.head->coefficients, p.head->exponents));
@@ -114,18 +119,24 @@ void polynomial::operator=(polynomial &p) {
 polynomial &polynomial::operator+(polynomial &p) {
     double *sortArray = ploySort(head, p.head, '+');
     int maxExponent = getMaxExponent(p.head, head);
-    getSortedPoly(sortArray, maxExponent);
-    return *this;
+    static polynomial copy;
+    getPoly(sortArray, maxExponent, copy);
+    return copy;
+
 }
+
 
 polynomial &polynomial::operator-(polynomial &p) {
     double *sortArray = ploySort(head, p.head, '-');
     int maxExponent = getMaxExponent(p.head, head);
-    getSortedPoly(sortArray, maxExponent);
-    return *this;
+    static polynomial copy;
+    getPoly(sortArray, maxExponent, copy);
+    return copy;
+
 }
 
 polynomial &polynomial::operator*(polynomial &p) {
+
     return *this;
 }
 
@@ -133,23 +144,6 @@ polynomial &polynomial::operator*(polynomial &p) {
 polynomial &polynomial::operator*=(polynomial &p) {
     return *this;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void polynomial::list_head_insert(node *newItem) {
@@ -200,7 +194,7 @@ void polynomial::list_insert(node *newItem, int index) {
     }
 }
 
-void polynomial::list_copy(polynomial copy) {
+void polynomial::list_copy(polynomial &copy) {
     if (copy.isEmpty()) {
         return;
     }
@@ -252,7 +246,23 @@ void polynomial::getSortedPoly(double *sortArray, int maxExponent) {
 
         }
     }
-    show_content(head);
+}
+
+
+void polynomial::getPoly(double *sortArray, int maxExponent, polynomial &p) {
+    p.list_clear();
+    for (int i = maxExponent; i >= 0; --i) {
+        if (sortArray[i] != 0) {
+            if (p.head == nullptr) {
+                p.list_head_insert(new node(sortArray[i], i));
+            } else {
+
+                p.list_insert(new node(sortArray[i], i), p.size);
+            }
+            cout << i << ": " << sortArray[i] << endl;
+
+        }
+    }
 }
 
 
@@ -260,7 +270,7 @@ double *polynomial::ploySort(node *p1, node *p2, char sign) {
     int maxExponent = getMaxExponent(p1, p2);
     cout << "max:" << maxExponent << endl;
 
-    double *arr = new double[maxExponent + 1]();
+    auto *arr = new double[maxExponent + 1]();
 
     node *first = p1;
     node *second = p2;
@@ -308,7 +318,7 @@ double polynomial::eval(int x) {
     return sum;
 }
 
-void polynomial::show_content(node *&head) {
+void polynomial::show_content() {
     node *curr = head;
     for (int i = 0; i < list_length(); ++i) {
         cout << curr->coefficients << "x^" << curr->exponents;
