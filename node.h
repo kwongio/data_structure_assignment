@@ -5,7 +5,7 @@ using namespace std;
 class node {
 public:
     double coefficients = 0.0;
-    unsigned exponents = 0;
+    int exponents = 0;
     node *next = nullptr;
 
     node() {
@@ -18,7 +18,6 @@ public:
     }
 
     ~node() {
-        cout << "node  deconstructor " << endl;
         delete next;
     }
 
